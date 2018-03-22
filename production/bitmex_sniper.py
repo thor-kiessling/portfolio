@@ -1,10 +1,6 @@
 testing = False
 
-# from bravado.client import SwaggerClient
-# from bravado.requests_client import RequestsClient
 
-# from BitMEXAPIKeyAuthenticator import APIKeyAuthenticator
-# from bitmex_websocket import BitMEXWebsocket
 import datetime
 import os
 import pickle
@@ -24,7 +20,6 @@ from market_maker import bitmex
 from market_maker.utils import log
 import api_keys
 
-# import matplotlib.pyplot as plt
 
 
 logger = log.setup_custom_logger('root', log_level='INFO')
@@ -71,7 +66,6 @@ else:  # testing stuff
 # time_till_next_settlement = datetime.timedelta(hours=1)
 
 symbol = "XBTUSD"
-# ('returns, correct percentage, W, l, target, decomp, wavelet pad, wavelet, initial, knn, ema_time', '230.93', 0.5475, 0.13518536075870957, 62, 18, 5, 'symmetric', 'db3', 1, 14, 38)
 
 # constants trained for KNN-DTW-DWT #
 W = .13518536075870957  # warp factor
@@ -112,12 +106,6 @@ def desired_contracts_func(desired_direction='long', postfunding=False, leverage
 
     if desired_direction == "short" and not postfunding: desired_contracts_outer *= -1
     if desired_direction == "long" and postfunding: desired_contracts_outer *= -1
-    # if postfunding: # not necessary, using available margin already includes existing orders
-    #     desired_contracts_outer += current_contracts
-    #     if desired_direction == 'long' and desired_contracts_outer > 0:
-    #         desired_contracts_outer = 0
-    #     if desired_direction == 'short' and desired_contracts_outer < 0:
-    #         desired_contracts_outer = 0
     return_thing = int(desired_contracts_outer)
     if return_thing is None:
         raise ValueError("returned None from desired_contracts_func")
@@ -221,33 +209,11 @@ def run_DTW(data):
         if distance < least_distance:
             best_offset = iteration
             least_distance = distance
-    # while len(smoothed) > len(data):
-    #     smoothed = np.delete(smoothed, -1)
-    # comparison = data[-L:]
-    # query = smoothed[-L:]
-    # plt.plot(comparison, "r-") # red is base
-    # plt.plot(query, "k-")  # black is smooth
-    # print("best offset", best_offset)
-
-    # comparison = data[:200]
-    # query = smoothed[:200]
-    # plt.figure(3)
-    # plt.plot(comparison, "r-")  # red is base
-    # plt.plot(query, "k-")  # black is smooth
-    # plt.show()
-
-    # query = smoothed[-L:]
     if best_offset == 0:
         query = smoothed[-L:]
     else:
         query = smoothed[-(L + best_offset):-best_offset]
-    # plt.figure(2)
-    # comparison = data[-L:]
 
-    # plt.plot(comparison, "r-")  # red is base
-    # plt.plot(query, "k-")  # black is smooth
-    # print("best offset", best_offset)
-    # plt.show()
     data_to_search = data[:-(L + best_offset)]
 
     np.savetxt("Query.txt", query, delimiter='\t')
@@ -264,19 +230,10 @@ def run_DTW(data):
     resultlines = resultlines.split('\n')
     distancelist = []
     distancelist = resultlines[3:3 + num_neighbors]
-    # for result in resultlines:
-    #     split = result.split(":")
-    #     if split[0] == 'Location ':
-    #         position = int(split[1])
-    #     if split[0] == 'Distance ':
-    #         distance = float(split[1])
+    #
     for index2, item in enumerate(distancelist):
         distancelist[index2] = int(item)
-    # if distance is None or (distance == 0 and position == 0):
-    #     distance = 1337
-    #     return (str(resultlines), distance, index)
-    # if position == 0 or position is None:
-    #     position = 1337
+
 
     return distancelist, data_to_search
 
@@ -285,13 +242,10 @@ recalculate_flag = False
 
 
 def main():
-    # for item in dir(bm):
-    #     print(item)
-    # ema1 = []
-    # ema2 = []
+
     previous_calc_time = None
     global funding_has_control
-    # recalculate_flag = False
+
     old_desired_direction = False
     global desired_contracts, use_market, previous_trade
     # desired_contracts = 0
@@ -466,7 +420,6 @@ funding_has_control = False
 def longterm():
     # part where I manage the non-funding long/shorts using 1054, 373 dual ema
     global desired_contracts, recalculate_flag, previous_trade
-    # prediction_ema = 0
     old_desired_direction = 'none'
     previous_calc_time = datetime.datetime.now(tz=pytz.UTC) - datetime.timedelta(minutes=200)
     ema1 = []
@@ -483,9 +436,6 @@ def longterm():
     else:
         previous_trade = None
         recalculate_flag = True
-    # time_since_prev_calc = datetime.datetime.now(tz=pytz.UTC) - previous_calc_time
-    # num_to_calculate = int(time_since_prev_calc.seconds / 60)
-    # restart_flag = False
     sleep(10)
     while True:
 
@@ -524,26 +474,6 @@ def longterm():
             else:
                 old_desired_direction = 'short'
         prediction_ema = ema2[-1] > ema2[-2]
-        # nearest_neighbors, smoothed_data = run_DTW(data[:-num_to_calculate, 4])
-        # # smoothed_data = DWT_smooth(data[:, 4])
-        # average = []
-        # for position in nearest_neighbors:
-        #     average.append((np.mean(smoothed_data[position + L + 1:position + L + future_target])
-        #                     - smoothed_data[position + L]) / smoothed_data[position + L])
-        # average = np.mean(average)
-        # prediction_ema = (average - prediction_ema) * (
-        #     2 / (ema_timeperiod + 1)) + prediction_ema  # manually calculating ema
-        # num_to_calculate -= 1
-            # logger.info("prediction_ema:"+str(prediction_ema)+" num_calc "+str(num_to_calculate)) 
-            # if num_to_calculate >= 2:
-            #     if num_to_calculate % 10 == 0:
-            #         logger.info("starting up " +
-            #                     str(round(num_to_calculate*100/int(time_since_prev_calc.seconds / 60), 2)) + "%")
-            #     recalculate_flag = True
-            #     restart_flag = True
-        # if restart_flag:
-        #     restart_flag = False
-        #     continue
 
         if prediction_ema > 0:  # 
             desired_direction = 'long'
@@ -605,15 +535,9 @@ def trade():
         while bm.ws.exited or not bm.ws.wst.is_alive():
             bm.reconnect()
             sleep(1)
-        # if desired_contracts_func < 0: desired_direction = "short"
-        # elif desired_contracts_func > 0: desired_direction = "long"
-        # else:
         submitted_order_flag = False
         old_order_buy_quantity = 0
         old_order_sell_quantity = 0
-        # current_contracts = bm.position(symbol)['currentQty']
-        # if current_contracts < 0: desired_direction = "long"
-        # else: desired_direction = "short"
         try:
             bm.position(symbol)
         except KeyError:
@@ -691,7 +615,6 @@ def trade():
                         logger.info("short limit order placed")
                         open_order_sell_quantity -= quantity
                         submitted_order_flag = True
-                        # bitMEXAuthenticated.Order.Order_new(symbol='XBTUSD', orderQty=3, price=1000).result()
             sleep(.5)
             if orderid is None or not orderid['leavesQty'] > 0:
                 orderid = None

@@ -85,13 +85,6 @@ class BitMEXWebsocket():
                 self.__wait_for_account()
         except TimeoutError:
             self.logger.info("ws establishment timed out")
-            # self.__reset()
-            # self.wst.join(timeout=1)
-            # self.endpoint = pickle.load(open('ws_url', 'rb'))
-            # self.secret = pickle.load(open('ws_secret', 'rb'))
-            # self.key = pickle.load(open('ws_key', 'rb'))
-            # self.logger.info("hit reconnect part 2")
-            # self.connect(self.endpoint, key=self.key, secret=self.secret)
             self.__reset()
             self.exit()
             return
@@ -142,8 +135,6 @@ class BitMEXWebsocket():
         # return self.data['orderBookL2']
 
     def best_bid_ask(self):
-        # self.best_bid = self.data['quote'][0]['bidPrice']
-        # self.best_ask = self.data['quote'][0]['askPrice']
         return self.best_bid, self.best_ask
 
 
@@ -181,10 +172,6 @@ class BitMEXWebsocket():
 
     def __connect(self, wsURL):
         '''Connect to the websocket in a thread.'''
-        # threads = threading.active_count()  # 4 when debugging, 1 normally on first startup
-        # # print(threads)
-        # if (threads >= 5 and "testnet" in wsURL) or (threads >= 3 and "testnet" not in wsURL):
-        #     return  # don't launch another thread if main and wst are alive
         if hasattr(self, 'wst') and self.wst.isAlive:
             return
         self.logger.debug("Starting thread")
@@ -215,18 +202,10 @@ class BitMEXWebsocket():
         if not conn_timeout or self._error:
             # sleep(1)
             conn_timeout = 5
-            # self.__reset()
-            # self.endpoint = pickle.load(open('ws_url', 'rb'))
-            # self.secret = pickle.load(open('ws_secret', 'rb'))
-            # self.key = pickle.load(open('ws_key', 'rb'))
-            # self.wst.join(timeout=1)
-            # self.connect(self.endpoint, key=self.key, secret=self.secret)
-            # self.logger.info("Hit reconnect part 1")
 
             self.logger.error("Couldn't connect to WS! Exiting.")
             self.exit()
             return
-            #sys.exit(1)
 
     def __get_auth(self):
         '''Return auth headers. Will use API Keys if present in settings.'''
@@ -352,35 +331,6 @@ class BitMEXWebsocket():
                     if table != 'order' and table != 'orderBookL2' and len(self.data[table]) > BitMEXWebsocket.MAX_TABLE_LEN:
                         self.data[table] = self.data[table][(BitMEXWebsocket.MAX_TABLE_LEN // 2):]
                     # todo make this also check for obviously bad orders
-                    # if table == "orderBookL2" and len(self.data[table]) > 50:  # old trim orderbook down
-                    #     #orderbook = sorted(self.data[table], key=lambda k: -k['price'])
-                    #     orderbook = sorted(self.data[table], key=itemgetter('price'), reverse=True)
-                    #     old_side = 'Sell'
-                    #     old_old_side = 'Sell'
-                    #     bad_order_index = []
-                    #     for index, order in enumerate(orderbook):
-                    #         if order['side'] != old_side and old_old_side != old_side:
-                    #             bad_order_index.append(index-1)
-                    #         old_old_side = old_side
-                    #         old_side = order['side']
-                    #     if orderbook[-1]['side'] != 'Buy': bad_order_index.append(-1)
-                    #     if bad_order_index:
-                    #         for index in sorted(bad_order_index, reverse=True):
-                    #             del orderbook[index]
-                    #     last_ask = 0
-                    #     num_asks = 0
-                    #     num_bids = 0
-                    #     for order in orderbook:
-                    #         if order['side'] == 'Sell':
-                    #             last_ask += 1
-                    #             num_bids += 1
-                    #             continue
-                    #         else:
-                    #             num_asks += 1
-                    #     dataslice = slice(last_ask - min(10, num_asks), last_ask + min(10, num_bids))
-                    #     orderbook = orderbook[dataslice]
-                    #
-                    #     self.data[table] = orderbook
                     if table == "orderBookL2":
                         most_recent_updated = None
                         for order in message['data']:
