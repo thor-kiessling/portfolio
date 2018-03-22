@@ -23,7 +23,7 @@ manages the exchange, orderbook, user balance, and user position state for the _
 [My fork](production/motif_matching_knn.pyx) of [nicholasg3's motif matching](https://github.com/nicholasg3/motif-mining/blob/master/Motif_Matching.py)
 extends the original by adding options for K-nearest neighbor matching and vastly speeds up execution time with Cython
 cdefs and compiling. Runtime improved from 41 seconds to .26 seconds when matching a 100 length sample to a 568k length 
-timeseries. The [optimization report](production/motif_matching_knn.html) shows how this was achieved, with the white sections of 
+timeseries. The [optimization report](http://htmlpreview.github.io/?https://github.com/thor-kiessling/portfolio/blob/master/production/motif_matching_knn.html) shows how this was achieved, with the white sections of 
 code inside loops converting to C without python protection/interaction.
 
 Data visualization is essential to understanding what my code is doing. Scatter plots and histograms helped me to
