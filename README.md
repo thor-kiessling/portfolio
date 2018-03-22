@@ -2,7 +2,8 @@
 
 Hello, I am Thor Kiessling and this is my showcase for real-world python implementations of machine learning and 
 algorithmic trading. To get these scripts running rename api_keys_example.py to api_keys.py and input
- [bitmex.com](https://www.bitmex.com) api keys. If you wish to recompile the Cython portions:
+ [bitmex.com](https://www.bitmex.com) api keys, and download [DB.sqlite](http://roguenex.us/DB.sqlite)
+ and place it in the production folder. If you wish to recompile the Cython portions:
  ```
      python setup.py build_ext --inplace 
  ```
@@ -51,7 +52,7 @@ Later experiments included using an [autoencoder](production/scikitforest.py) to
 
 ## Algotrading
 
-[DB.sqlite](production/DB.sqlite) contains all 1m OHLC data for XBTUSD in _bmxswap_, all funding history for XBTUSD in 
+[DB.sqlite](http://roguenex.us/DB.sqlite) contains all 1m OHLC data for XBTUSD in _bmxswap_, all funding history for XBTUSD in 
 _bmxfund_, and an incomplete 1m OHLC for okcoin quarterlies.
 
 Bitmex sniper incorporates all I have learned about the mechanics of algotrading, it reliably executes long term and 
