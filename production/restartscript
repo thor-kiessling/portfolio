@@ -1,0 +1,4 @@
+until python get_history.py; do
+	echo "it worked"
+	sleep 1
+done
